@@ -1,0 +1,24 @@
+{% extends "admin_wrapper.html" %}
+{% block content %}
+<body>
+    <div id="messages" class="text-center"></div>
+    <div class="table-wrapper">
+        <table class="table table-striped-dark table-inverse table-responsive" id="userTable">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                    <th>Date Of Birth</th>
+                    <th>Email</th>
+                    <th>Mobile Number</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="userList"></tbody>
+        </table>
+    </div>
+</body>
+</html>
+{% endblock %}

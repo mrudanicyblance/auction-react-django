@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up</title>
+    {% load static %}
+    <link href="{% static 'assests/bootstrap-4.6.2-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="{% static 'assests/jquery/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'assests/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js' %}"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center">Sign up</h2>
+                        <form method="post" id="signupform">
+                            {% csrf_token %}
+                            <div class="row">
+                                <input type="hidden" name="role" value="buyer">
+                                <div class="col-md-6 mb-3">
+                                    <label for="first_name" class="form-label">First name:</label>
+                                    <input type="text" id="first_name" name="first_name" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" placeholder="Enter your Firstname" value="{{ form.first_name.value|default:'' }}">
+                                    {% if form.first_name.errors %}
+                                        {% for error in form.first_name.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="last_name" class="form-label">Last name:</label>
+                                    <input type="text" id="last_name" name="last_name" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" placeholder="Enter your Lastname" value="{{ form.last_name.value|default:'' }}">
+                                    {% if form.last_name.errors %}
+                                        {% for error in form.last_name.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="mobno" class="form-label">Mobile Number:</label>
+                                    <input type="tel" id="mobno" name="mobile_number" class="form-control {% if form.mobile_number.errors %}is-invalid{% endif %}" placeholder="Enter your Mobile Number" value="{{ form.mobile_number.value|default:'' }}">
+                                    {% if form.mobile_number.errors %}
+                                        {% for error in form.mobile_number.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="dob" class="form-label">Date of Birth:</label>
+                                    <input type="date" id="dob" name="dob" class="form-control {% if form.dob.errors %}is-invalid{% endif %}" placeholder="Enter your Date of Birth" value="{{ form.dob.value|default:'' }}">
+                                    {% if form.dob.errors %}
+                                        {% for error in form.dob.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">Username:</label>
+                                    <input type="text" id="username" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" placeholder="Enter your Username Choice" value="{{ form.username.value|default:'' }}">
+                                    {% if form.username.errors %}
+                                        {% for error in form.username.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email:</label>
+                                    <input type="email" id="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" placeholder="Enter your email" value="{{ form.email.value|default:'' }}">
+                                    {% if form.email.errors %}
+                                        {% for error in form.email.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password1" class="form-label">Password:</label>
+                                    <input type="password" id="password1" name="password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" placeholder="Enter your password">
+                                    {% if form.password1.errors %}
+                                        {% for error in form.password1.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password2" class="form-label">Confirm Password:</label>
+                                    <input type="password" id="password2" name="password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" placeholder="Confirm your password">
+                                    {% if form.password2.errors %}
+                                        {% for error in form.password2.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="md-3">
+                                <button type="submit" class="form-control btn btn-primary btn-block">Sign up</button>
+                            </div>
+                        </form>
+                        <p class="text-center mt-3">Have an account? <a href="{% url 'login_account' %}">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    // Get today's date
+    var today = new Date();
+
+    // Calculate the minimum date for eligibility (18 years ago)
+    var minDate = new Date();
+    minDate.setFullYear(today.getFullYear() - 18);
+
+    // Convert the minimum date to the format expected by the input[type="date"]
+    var minDateString = minDate.toISOString().slice(0, 10);
+
+    // Set the min attribute of the date input field
+    document.getElementById('dob').setAttribute('max', minDateString);
+    document.getElementById('dob').focus();
+</script>
+</html>
