@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from .forms import EmailAuthenticationForm  # Import the custom form
 
+#For Admin Login
 def admin_login(request):
     if request.method == 'POST':
         form = EmailAuthenticationForm(request, data=request.POST)  # Use custom form
