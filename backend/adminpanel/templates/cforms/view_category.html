@@ -1,0 +1,121 @@
+{% extends 'adminpanel/layouts/default.html' %}
+{% load static %}
+{% block content %}
+<script src="{% static 'js/category_view.js' %}"></script>
+<style>
+    .accordion-button:hover{
+        cursor: pointer;
+    }
+</style>
+<body>
+    <div class="container">
+        <div id="general_messages" style="display: none;"></div>
+        <div style="display: flex; border-bottom: 1px solid black">
+            <h2>Categories</h2>
+            <button class="btn btn-primary btn-sm m-2 ml-auto" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
+        </div>
+        <div id="categoryAccordion" class="accordion">
+            {% for category in categories %}
+            <div class="accordion-item m-1">
+                <div class="accordion-header" id="heading{{ forloop.counter }}">
+                    <h5 class="mb-0 d-flex">
+                        <div class="accordion-button border-0" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">
+                            {{ category.name }}
+                        </div>
+                        <div class="ml-auto">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#addSubCategoryModal" data-category-id="{{ category.id }}">Add SubCategory</button>
+                            <button class="btn btn-warning" onclick="update_category(this)" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}"><i class='fa fa-edit'></i></button>
+                            <button class="btn btn-danger" onclick="delete_category(this)" data-category-id="{{ category.id }}"><i class='fa fa-trash'></i></button>
+                        </div>
+                    </h5>
+                </div>
+
+                <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ forloop.counter }}" data-parent="#categoryAccordion">
+                    <div class="accordion-body">
+                        <ul>
+                            {% if category.subcategories.all %}
+                                {% for subcategory in category.subcategories.all %}
+                                <li>{{ subcategory.subcat_name }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <li>No subcategory yet</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- <ul>
+            {% for category in categories %}
+            <li style="display: flex;">
+                <span class="m-1">{{ category.name }}</span>
+                <ul>
+                    {% for subcategory in category.subcategories.all %}
+                    <li>{{ subcategory.subcat_name }}</li>
+                    {% endfor %}
+                </ul>
+                <button class="btn btn-primary btn-sm ml-auto" data-toggle="modal" data-target="#addSubCategoryModal" data-category-id="{{ category.id }}">Add SubCategory</button>
+            </li>
+            {% endfor %}
+        </ul> -->
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="addCategoryForm" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCategoryModalLabel"><i class='bx bx-plus'></i>Add Category</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="categoryName">Category Name</label>
+                            <input type="text" class="form-control" id="categoryName" name="name" required>
+                            <input type="hidden" id="categoryId" name="id">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary btn-sm" value="Save Category">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add SubCategory Modal -->
+    <div class="modal fade" id="addSubCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addSubCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="addSubCategoryForm" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addSubCategoryModalLabel"><i class='bx bx-plus'></i>Add SubCategory</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="subCategoryName">SubCategory Name</label>
+                            <input type="text" class="form-control" id="subCategoryName" name="subcat_name" required>
+                            <input type="hidden" id="sub_categoryId" name="category_id">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save SubCategory</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+{% endblock content %}

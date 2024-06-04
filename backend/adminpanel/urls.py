@@ -15,6 +15,13 @@ urlpatterns = [
     path('supadmin/users/edit/<int:user_id>/', views.edit_user, name='editusers'),
     path('supadmin/users/delete/<int:user_id>/', views.delete_user, name='deleteuser'),
 
+    # category subcategory urls,
+    path('categories/', views.view_category, name='view_category'),
+    path('categories/add/', views.add_category, name='add_category'),
+    path('subcategories/add/', views.add_subcategory, name='add_subcategory'),
+    path('categories/delete/',views.delete_category, name='delete_category'),
+    path('categories/update/',views.update_category, name='update_category'),
+    path('view_fields/',views.view_fields,name="view_fields"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
