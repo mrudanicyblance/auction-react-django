@@ -111,7 +111,7 @@
                                 <div class="col-md-2 form-group">
                                     <label for="photo">Current Profile</label>
                                     {% if profile.photo %}
-                                    <img class="chat-img mr-2 border-radius-50" src="{{ MEDIA_URL }}{{ user.profile.photo.url }}" alt="">
+                                        <img class="chat-img mr-2 border-radius-50" src="{% static '/' %}{{ profile.photo }}" alt="">
                                     {% else %}
                                         <img class="chat-img mr-2 border-radius-50" src="{% static 'admin/img/member-img/1.png' %}" alt="">
                                     {% endif %}

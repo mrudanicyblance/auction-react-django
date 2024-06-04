@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
-from .forms import EmailAuthenticationForm, SignUpForm  # Import the custom form
+from .forms import EmailAuthenticationForm, SignUpForm, UserAndProfileForm  # Import the custom form
+from django.contrib.auth.models import User
 from .models import Profile
 import random
 import string
+from django.contrib import messages
 
 #ADMIN LOGIN PAGE
 def admin_login(request):
@@ -45,7 +47,13 @@ def index(request):
 
 #USERS PAGE
 def all_users(request):
-    return render(request, 'adminpanel/users/index.html')
+    users_with_user_role = User.objects.filter(profile__role='user')
+
+    # You can then pass this queryset to your template
+    context = {
+        'users': users_with_user_role
+    }
+    return render(request, 'adminpanel/users/index.html',context)
 
 def generate_random_username():
     return 'user_' + ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
@@ -85,7 +93,16 @@ def create_users(request):
                 role=form.cleaned_data['role'],
                 photo=form.cleaned_data['photo']
             )
+            # Send email to the user
+            subject = 'Your account has been created'
+            html_message = render_to_string('adminpanel/users/email.html', {'username': user.username, 'password': random_password})
+            plain_message = strip_tags(html_message)
+            from_email = 'urmish.cyblance@gmail.com'  # Change this to your email address
+            to_email = user.email
 
+            #send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+
+            messages.success(request, 'User created successfully and email sent')
             return redirect('allusers')
         else:
             print("Form errors:", form.errors.as_json())
@@ -93,8 +110,51 @@ def create_users(request):
     else:
         form = SignUpForm()
     return render(request, 'adminpanel/users/create.html', {'form': form})
-def edit_users(request):
-    return render(request, 'adminpanel/users/edit.html', {
-        #'user_form': user_form,
-        #'profile_form': profile_form
-    })
+
+def edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    profile = user.profile
+
+    if request.method == 'POST':
+        form = UserAndProfileForm(request.POST, request.FILES, instance=user)
+        if not request.FILES.get('photo'):
+            form.fields['photo'].initial = profile.photo
+        if form.is_valid():
+            # Update User model fields
+            user.email = form.cleaned_data['email']
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            # Update Profile model fields
+            profile.phone_no = form.cleaned_data['phone_no']
+            profile.address_line_1 = form.cleaned_data['address_line_1']
+            profile.address_line_2 = form.cleaned_data['address_line_2']
+            profile.country = form.cleaned_data['country']
+            profile.state = form.cleaned_data['state']
+            profile.city = form.cleaned_data['city']
+            profile.zipcode = form.cleaned_data['zipcode']
+            profile.photo = form.cleaned_data['photo']
+            profile.role = form.cleaned_data['role']
+            # Save both models
+            user.save()
+            profile.save()
+            messages.success(request, 'User updated successfully')
+            return redirect('allusers')  # Replace 'all_users' with your desired redirect URL name
+    else:
+        form = UserAndProfileForm(instance=user)
+
+    return render(request, 'adminpanel/users/edit.html', {'form': form, 'user': user, 'profile': profile})
+
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        user.delete()
+        messages.success(request, 'User deleted successfully')
+        return redirect('allusers')  # Redirect to the user list page
+    else:
+        messages.error(request, 'Somthing went wrong')
+        return redirect('allusers')
+
+def my_profile (request):
+    return render(request, 'adminpanel/my-profile.html')
+def forget_password (request):
+    return render(request, 'adminpanel/forget-password.html')

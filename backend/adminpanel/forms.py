@@ -6,13 +6,13 @@ from .models import Profile
 class EmailAuthenticationForm(AuthenticationForm):
     username = forms.EmailField(label='Email', max_length=254, required=True)
 
-class SignUpForm(UserCreationForm):
+class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=True, help_text='Required.')
     last_name = forms.CharField(max_length=30, required=True, help_text='Required.')
     email = forms.EmailField(max_length=254, required=True, help_text='Required. Enter a valid email address.')
     phone_no = forms.CharField(max_length=15, required=True)
     address_line_1 = forms.CharField(max_length=255, required=True)
-    address_line_2 = forms.CharField(max_length=255, required=False)  # changed to required=True
+    address_line_2 = forms.CharField(max_length=255, required=False)
     country = forms.CharField(max_length=100, required=True)
     state = forms.CharField(max_length=100, required=True)
     city = forms.CharField(max_length=100, required=True)
@@ -22,7 +22,29 @@ class SignUpForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'phone_no', 'address_line_1', 'address_line_2', 'country', 'state', 'city', 'zipcode', 'photo')
+        fields = ('email', 'first_name', 'last_name', 'phone_no', 'address_line_1', 'address_line_2', 'country', 'state', 'city', 'zipcode', 'photo')
+
+    def save_profile(self, user, commit=True):
+        profile, created = Profile.objects.update_or_create(
+            user=user,
+            defaults={
+                'phone_no': self.cleaned_data['phone_no'],
+                'address_line_1': self.cleaned_data['address_line_1'],
+                'address_line_2': self.cleaned_data['address_line_2'],
+                'country': self.cleaned_data['country'],
+                'state': self.cleaned_data['state'],
+                'city': self.cleaned_data['city'],
+                'zipcode': self.cleaned_data['zipcode'],
+                'role': self.cleaned_data['role'],
+                'photo': self.cleaned_data['photo']
+            }
+        )
+        return profile
+
+class SignUpForm(UserCreationForm, UserProfileForm):
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'email', 'phone_no', 'address_line_1', 'address_line_2', 'country', 'state', 'city', 'zipcode', 'photo')
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -34,36 +56,26 @@ class SignUpForm(UserCreationForm):
         user = super(SignUpForm, self).save(commit=False)
         if commit:
             user.save()
-            Profile.objects.create(
-                user=user,
-                phone_no=self.cleaned_data['phone_no'],
-                address_line_1=self.cleaned_data['address_line_1'],
-                address_line_2=self.cleaned_data['address_line_2'],
-                country=self.cleaned_data['country'],
-                state=self.cleaned_data['state'],
-                city=self.cleaned_data['city'],
-                zipcode=self.cleaned_data['zipcode'],
-                role=self.cleaned_data['role'],
-                photo=self.cleaned_data['photo']
-            )
+            self.save_profile(user, commit)
         return user
 
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ('phone_no', 'address_line_1', 'address_line_2', 'country', 'state', 'city', 'zipcode', 'photo')
+class UserAndProfileForm(UserProfileForm):
+    class Meta(UserProfileForm.Meta):
+        fields = UserProfileForm.Meta.fields
 
-    def __init__(self, *args, **kwargs):
-        super(UserProfileForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.required = True
+    def save(self, commit=True):
+        user = super(UserAndProfileForm, self).save(commit=False)
+        if commit:
+            user.save()
+            self.save_profile(user, commit)
+        return user
 
-class UserUpdateForm(UserChangeForm):
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'first_name', 'last_name')
+# class UserUpdateForm(UserChangeForm):
+#     class Meta:
+#         model = User
+#         fields = ('email', 'first_name', 'last_name')
 
-    def __init__(self, *args, **kwargs):
-        super(UserUpdateForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.required = True
+#     def __init__(self, *args, **kwargs):
+#         super(UserUpdateForm, self).__init__(*args, **kwargs)
+#         for field in self.fields.values():
+#             field.required = True
