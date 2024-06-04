@@ -2,7 +2,7 @@ $(document).ready(function () {
     $('#addFields').submit(function(e){
         e.preventDefault();
         var field_id = $('#fieldId').val();
-        var url = field_id ? 'http://127.0.0.1:8000/edit_field/' : 'http://127.0.0.1:8000/add_field/';
+        var url = field_id ? 'http://127.0.0.1:8000/field/edit/' : 'http://127.0.0.1:8000/field/add/';
         var form_type = field_id ? 'updated' : 'created';
         $.ajax({
             type: "post",

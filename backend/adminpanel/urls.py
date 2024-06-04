@@ -15,18 +15,18 @@ urlpatterns = [
     path('supadmin/users/edit/<int:user_id>/', views.edit_user, name='editusers'),
     path('supadmin/users/delete/<int:user_id>/', views.delete_user, name='deleteuser'),
 
-    # category subcategory urls
-    path('categories/', views.view_category, name='view_category'),
-    path('categories/add/', views.add_category, name='add_category'),
-    path('subcategories/add/', views.add_subcategory, name='add_subcategory'),
-    path('categories/delete/',views.delete_category, name='delete_category'),
-    path('categories/update/',views.update_category, name='update_category'),
+    # Categories & Subcategories URL
+    path('categories/', views.view_category, name='categories'),
+    path('categories/add/', views.add_category, name='createcategories'),
+    path('subcategories/add/', views.add_subcategory, name='createsubcategory'),
+    path('categories/delete/',views.delete_category, name='deletecategory'),
+    path('categories/edit/',views.update_category, name='updatecategory'),
 
-    # field urls
-    path('view_fields/',views.view_fields,name="view_fields"),
-    path('add_field/',views.add_field,name="add_field"),
-    path('edit_field/',views.edit_field,name="edit_field"),
-    path('delete_field/',views.delete_field,name="delete_field"),
+    # Field urls
+    path('fields/',views.view_fields,name="fields"),
+    path('field/add/',views.add_field,name="createfield"),
+    path('field/edit/',views.edit_field,name="editfield"),
+    path('field/delete/',views.delete_field,name="deletefield"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
