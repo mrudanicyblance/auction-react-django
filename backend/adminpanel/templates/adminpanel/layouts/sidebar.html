@@ -12,6 +12,7 @@
             </a>
         </li>
         <li class="nav-item">
+<<<<<<< HEAD
             <a class="nav-link" data-toggle="collapse" href="#advanced" aria-expanded="false" aria-controls="advanced">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list link-icon">
                     <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -22,12 +23,41 @@
                     <line x1="3" y1="18" x2="3.01" y2="18"></line>
                 </svg>
                 <span class="menu-title">Category Management </span>
+=======
+            <a class="nav-link" data-toggle="collapse" href="#users" aria-expanded="false" aria-controls="users">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users link-icon">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="menu-title">Users</span>
                 <i class="ti-angle-right"></i>
             </a>
-            <div class="collapse" id="advanced">
+            <a class="nav-link" data-toggle="collapse" href="#advanced" aria-expanded="false" aria-controls="advanced">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list link-icon">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                <span class="menu-title">Category Management </span>
+>>>>>>> origin/main
+                <i class="ti-angle-right"></i>
+            </a>
+            <div class="collapse" id="users">
                 <ul class="nav flex-column sub-menu">
+<<<<<<< HEAD
                     <li class="nav-item"> <a class="nav-link" href="{% url 'view_category' %}">Category list</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{% url 'view_fields' %}">Field list</a></li>
+=======
+                    <li class="nav-item"> <a class="nav-link" href="{% url 'allusers' %}">List</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{% url 'createusers' %}">Add</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{% url 'view_category' %}">Category list</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{% url 'view_fields' %}">Field list</a></li>
+>>>>>>> origin/main
                 </ul>
             </div>
         </li>

@@ -8,8 +8,6 @@ from django.contrib import messages
 from .forms import EmailAuthenticationForm  # Import the custom form
 from .models import Category, SubCategory
 
-<<<<<<< Updated upstream
-=======
 # fields functions
 def view_fields(request):
     return render(request,'cforms/view_fields.html')
@@ -81,7 +79,12 @@ def add_subcategory(request):
 
 # account functions
 #For Admin Login
->>>>>>> Stashed changes
+from .forms import EmailAuthenticationForm, SignUpForm  # Import the custom form
+from .models import Profile
+import random
+import string
+
+#ADMIN LOGIN PAGE
 def admin_login(request):
     if request.method == 'POST':
         form = EmailAuthenticationForm(request, data=request.POST)  # Use custom form
@@ -106,11 +109,68 @@ def admin_login(request):
         form = EmailAuthenticationForm()  # Use custom form
     return render(request, 'adminpanel/login.html', {'form': form})
 
+def admin_logout(request):
+    logout(request)
+    return redirect('login')
+
+#INDEX PAGE
 @login_required
 def index(request):
     username = request.user.username
     return render(request, 'adminpanel/index.html', {'username': username})
 
-def admin_logout(request):
-    logout(request)
-    return redirect('login')
+#USERS PAGE
+def all_users(request):
+    return render(request, 'adminpanel/users/index.html')
+
+def generate_random_username():
+    return 'user_' + ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+
+def generate_random_password(length=10):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for i in range(length))
+
+def create_users(request):
+    if request.method == 'POST':
+        # Generate random username and password
+        random_username = generate_random_username()
+        random_password = generate_random_password()
+
+        # Assign random username and password to the request.POST data
+        request.POST = request.POST.copy()
+        request.POST['username'] = random_username
+        request.POST['password1'] = random_password
+        request.POST['password2'] = random_password
+
+        form = SignUpForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.save()
+
+            # Create profile with form data
+            Profile.objects.create(
+                user=user,
+                phone_no=form.cleaned_data['phone_no'],
+                address_line_1=form.cleaned_data['address_line_1'],
+                address_line_2=form.cleaned_data['address_line_2'],
+                country=form.cleaned_data['country'],
+                state=form.cleaned_data['state'],
+                city=form.cleaned_data['city'],
+                zipcode=form.cleaned_data['zipcode'],
+                role=form.cleaned_data['role'],
+                photo=form.cleaned_data['photo']
+            )
+
+            return redirect('allusers')
+        else:
+            print("Form errors:", form.errors.as_json())
+            return render(request, 'adminpanel/users/create.html', {'form': form})
+    else:
+        form = SignUpForm()
+    return render(request, 'adminpanel/users/create.html', {'form': form})
+def edit_users(request):
+    return render(request, 'adminpanel/users/edit.html', {
+        #'user_form': user_form,
+        #'profile_form': profile_form
+    })
