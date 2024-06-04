@@ -7,14 +7,58 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib import messages
 from .forms import EmailAuthenticationForm, SignUpForm, UserAndProfileForm  # Import the custom form
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, Category, SubCategory, Field, SubCategoryField, SubCategoryOptionField
 import random
 import string
 from django.contrib import messages
 
 # fields functions
 def view_fields(request):
-    return render(request,'cforms/view_fields.html')
+    fields = Field.objects.all()
+    context = {'fields':fields}
+    return render(request,'cforms/view_fields.html',context=context)
+
+@require_POST
+@csrf_exempt
+def add_field(request):
+    if request.method == 'POST':
+        try:
+            print('add fields')
+            field_name = request.POST.get('field_name')
+            field_type = request.POST.get('field_type')
+            print(field_name,field_type)
+            field = Field.objects.create(field_name=field_name,field_type=field_type)
+            return JsonResponse({'status':'success','field_name':field_name})
+        except Exception as e:
+            print('error occurred:',e)
+            return JsonResponse({'status':'error'})
+
+@require_POST
+@csrf_exempt
+def edit_field(request):
+    try:
+        field_id = request.POST.get('id')
+        field_name = request.POST.get('field_name')
+        field_type = request.POST.get('field_type')
+
+        field = Field.objects.get(id=field_id)
+        field.field_name = field_name
+        field.field_type = field_type
+        field.save()
+        return JsonResponse({'status':'success'})
+    except Exception as e:
+        return JsonResponse({'status':'error','message':str(e)})
+
+@require_POST
+@csrf_exempt
+def delete_field(request):
+    try:
+        field_id = request.POST.get('id')
+        field = Category.objects.get(id=field_id)
+        field.delete()
+        return JsonResponse({'status':'success'})
+    except:
+        return JsonResponse({'status':'error'})
 
 # category functions
 def view_category(request):
@@ -62,13 +106,14 @@ def delete_category(request):
     try:
         category_id = request.POST.get('id')
         category = Category.objects.get(id=category_id)
-        category.delete()  # This will also delete subcategories due to on_delete=models.CASCADE
+        category.delete()
         return JsonResponse({'status': 'success'})
     except Category.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Category does not exist'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
+# subcategory functions
 def add_subcategory(request):
     if request.method == 'POST':
         print('add_reached_sub')
@@ -112,12 +157,13 @@ def admin_logout(request):
     return redirect('login')
 
 #INDEX PAGE
-@login_required
+@login_required(login_url='login')
 def index(request):
     username = request.user.username
     return render(request, 'adminpanel/index.html', {'username': username})
 
 #USERS PAGE
+@login_required(login_url='login')
 def all_users(request):
     users_with_user_role = User.objects.filter(profile__role='user')
 
@@ -134,6 +180,7 @@ def generate_random_password(length=10):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for i in range(length))
 
+@login_required(login_url='login')
 def create_users(request):
     if request.method == 'POST':
         # Generate random username and password
@@ -183,6 +230,8 @@ def create_users(request):
         form = SignUpForm()
     return render(request, 'adminpanel/users/create.html', {'form': form})
 
+
+@login_required(login_url='login')
 def edit_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     profile = user.profile
@@ -216,6 +265,7 @@ def edit_user(request, user_id):
 
     return render(request, 'adminpanel/users/edit.html', {'form': form, 'user': user, 'profile': profile})
 
+@login_required(login_url='login')
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     if request.method == 'POST':
@@ -226,7 +276,9 @@ def delete_user(request, user_id):
         messages.error(request, 'Somthing went wrong')
         return redirect('allusers')
 
+@login_required(login_url='login')
 def my_profile (request):
     return render(request, 'adminpanel/my-profile.html')
+
 def forget_password (request):
     return render(request, 'adminpanel/forget-password.html')
