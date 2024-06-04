@@ -1,0 +1,11 @@
+{% extends 'adminpanel/layouts/default.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div id="general_messages" style="display: none;"></div>
+    <div style="display: flex; border-bottom: 1px solid black">
+        <h2>Fields</h2>
+        <button class="btn btn-primary btn-sm m-2 ml-auto" data-toggle="modal" data-target="#addFieldsModal">Add Field</button>
+    </div>
+</div>
+{% endblock content %}
