@@ -1,27 +1,132 @@
-{% extends 'adminpanel/layouts/default.html' %}
+{% extends 'layouts/default.html' %}
 {% load static %}
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12 col-sm-6 col-xl">
-            <!-- Card -->
-            <div class="card box-margin">
+        <div class="col-xl-12 box-margin">
+            <div class="card">
                 <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <!-- Title -->
-                            <h2 class="text-uppercase font-30">
-                                Welcome, {{ username }}
-                            </h2>
-                        </div>
-
-                        <div class="col-auto">
-                            <!-- Icon -->
-                            <div class="icon">
-                                <img src="{% static 'admin/img/bg-img/icon-8.png' %}" alt="">
+                    <h4 class="card-title">Update Profile</h4>
+                    <form class="cmxform" id="commentForm" method="post" action="{% url 'myprofile'%}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="first_name">First Name <span class="text-danger">*</span></label>
+                                    <input id="first_name" class="form-control" name="first_name" type="text" placeholder="Type First Name.." value="{{ user.first_name }}">
+                                    {% if form.first_name.errors %}
+                                    <label id="first_name-error" class="error mt-2 text-danger" for="first_name">{{ form.first_name.errors }}</label>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="last_name">Last Name <span class="text-danger">*</span></label>
+                                    <input id="last_name" class="form-control" name="last_name" type="text" placeholder="Type Last Name.." value="{{ user.last_name }}">
+                                    {% if form.last_name.errors %}
+                                    <label id="last_name-error" class="error mt-2 text-danger" for="last_name">{{ form.last_name.errors }}</label>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="email">E-Mail <span class="text-danger">*</span></label>
+                                    <input id="email" class="form-control" name="email" type="email" placeholder="Type Email.." value="{{ user.email }}">
+                                    {% if form.email.errors %}
+                                    <label id="email-error" class="error mt-2 text-danger" for="email">{{ form.email.errors }}</label>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="phone_no">Phone No <span class="text-danger">*</span></label>
+                                    <input id="phone_no" class="form-control" name="phone_no" type="text" placeholder="Type Phone No.." value="{{ profile.phone_no }}">
+                                    {% if form.phone_no.errors %}
+                                    <label id="phone_no-error" class="error mt-2 text-danger" for="phone_no">{{ form.phone_no.errors }}</label>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="address_line_1">Address Line 1 <span class="text-danger">*</span></label>
+                                    <input id="address_line_1" class="form-control" name="address_line_1" type="text" placeholder="Type Address Line 1.." value="{{ profile.address_line_1 }}">
+                                    {% if form.first_name.errors %}
+                                    <label id="address_line_1-error" class="error mt-2 text-danger" for="address_line_1">{{ form.address_line_1.errors }}</label>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="address_line_2">Address Line 2</label>
+                                    <input id="address_line_2" class="form-control" name="address_line_2" type="text" placeholder="Type Address Line 2.." value="{{ profile.address_line_2 }}">
+                                    {% if form.address_line_1.errors %}
+                                    <label id="address_line_2-error" class="error mt-2 text-danger" for="address_line_2">{{ form.address_line_2.errors }}</label>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="country" class="col-form-label">Country <span class="text-danger">*</span></label>
+                                    <select id="country" name="country" class="form-control">
+                                        <option value="">Choose Country</option>
+                                        <option value="India" {% if profile.country == "India" %}selected{% endif %}>India</option>
+                                        <option value="USA" {% if profile.country == "USA" %}selected{% endif %}>USA</option>
+                                        <option value="UK" {% if profile.country == "UK" %}selected{% endif %}>UK</option>
+                                    </select>
+                                    {% if form.country.errors %}
+                                    <label id="country-error" class="error mt-2 text-danger" for="country">{{ form.country.errors }}</label>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="state" class="col-form-label">State <span class="text-danger">*</span></label>
+                                    <select id="state" name="state" class="form-control">
+                                        <option value="">Choose State</option>
+                                        <option value="Ahmedabad" {% if profile.state == "Ahmedabad" %}selected{% endif %}>Ahmedabad</option>
+                                        <option value="Washington" {% if profile.state == "Washington" %}selected{% endif %}>Washington</option>
+                                        <option value="Surat" {% if profile.state == "Surat" %}selected{% endif %}>Surat</option>
+                                    </select>
+                                    {% if form.state.errors %}
+                                    <label id="state-error" class="error mt-2 text-danger" for="state">{{ form.state.errors }}</label>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="city">City <span class="text-danger">*</span></label>
+                                    <input id="city" class="form-control" name="city" type="text" placeholder="Type City.." value="{{ profile.city }}">
+                                    {% if form.city.errors %}
+                                    <label id="city-error" class="error mt-2 text-danger" for="city">{{ form.city.errors }}</label>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="zipcode">Zipcode <span class="text-danger">*</span></label>
+                                    <input id="zipcode" class="form-control" name="zipcode" type="text" placeholder="Type Zipcode.." value="{{ profile.zipcode }}">
+                                    {% if form.zipcode.errors %}
+                                    <label id="photo-error" class="error mt-2 text-danger" for="zipcode">{{ form.zipcode.errors }}</label>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    <label for="photo">Profile Photo <span class="text-danger">*</span></label>
+                                    <input id="photo" class="form-control" name="photo" type="file" class="custom-input-file" value="{{ profile.photo }}">
+                                    {% if form.photo.errors %}
+                                    <label id="photo-error" class="error mt-2 text-danger" for="photo">{{ form.photo.errors }}</label>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label for="photo">Current Profile</label>
+                                    {% if profile.photo %}
+                                    <img class="chat-img mr-2 border-radius-50" src="{{ MEDIA_URL }}{{ user.profile.photo.url }}" alt="">
+                                    {% else %}
+                                        <img class="chat-img mr-2 border-radius-50" src="{% static 'admin/img/member-img/1.png' %}" alt="">
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="role">Role <span class="text-danger">*</span></label>
+                                    <input id="role" class="form-control" name="role" value="user" type="text" placeholder="Type Role.." readonly>
+                                    {% if form.role.errors %}
+                                    <label id="role-error" class="error mt-2 text-danger" for="role">{{ form.role.errors }}</label>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <input class="btn btn-primary" type="submit" value="Submit">
+                        </fieldset>
+                    </form>
                 </div>
             </div>
         </div>

@@ -70,12 +70,5 @@ class UserAndProfileForm(UserProfileForm):
             self.save_profile(user, commit)
         return user
 
-# class UserUpdateForm(UserChangeForm):
-#     class Meta:
-#         model = User
-#         fields = ('email', 'first_name', 'last_name')
-
-#     def __init__(self, *args, **kwargs):
-#         super(UserUpdateForm, self).__init__(*args, **kwargs)
-#         for field in self.fields.values():
-#             field.required = True
+class ForgotPasswordForm(forms.Form):
+    email = forms.EmailField(label='Email', max_length=254)

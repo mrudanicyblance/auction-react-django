@@ -1,11 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
 from django.contrib import messages
-from .forms import EmailAuthenticationForm, SignUpForm, UserAndProfileForm  # Import the custom form
+from django.urls import reverse  # Import reverse from django.urls
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+
+
+from .forms import EmailAuthenticationForm, SignUpForm, UserAndProfileForm, ForgotPasswordForm  # Import the custom form
 from django.contrib.auth.models import User
 from .models import Profile, Category, SubCategory, Field, SubCategoryField, SubCategoryOptionField
 import random
@@ -277,8 +285,79 @@ def delete_user(request, user_id):
         return redirect('allusers')
 
 @login_required(login_url='login')
-def my_profile (request):
-    return render(request, 'my-profile.html')
+def my_profile(request):
+    user = request.user  # Get the current user object
+    try:
+        profile = user.profile  # Try to get the user's profile
+    except Profile.DoesNotExist:
+        profile = None  # If the profile doesn't exist, set it to None
 
-def forget_password (request):
-    return render(request, 'forget-password.html')
+    if request.method == 'POST':
+        form = UserAndProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            # Update User model fields
+            user.email = form.cleaned_data['email']
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+
+            if not profile:
+                # If the profile doesn't exist, create it
+                profile = Profile(user=user)
+
+            # Update Profile model fields
+            profile.phone_no = form.cleaned_data['phone_no']
+            profile.address_line_1 = form.cleaned_data['address_line_1']
+            profile.address_line_2 = form.cleaned_data['address_line_2']
+            profile.country = form.cleaned_data['country']
+            profile.state = form.cleaned_data['state']
+            profile.city = form.cleaned_data['city']
+            profile.zipcode = form.cleaned_data['zipcode']
+            profile.photo = form.cleaned_data['photo']
+            profile.role = form.cleaned_data['role']
+
+            # Save both models
+            user.save()
+            profile.save()
+
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('myprofile')  # Redirect to the user's profile page
+        else:
+            messages.error(request, 'There was an error updating your profile. Please check the form.')
+    else:
+        form = UserAndProfileForm(instance=user)
+        profile = Profile.objects.get(user=request.user)
+
+    return render(request, 'my-profile.html', {'form': form, 'profile': profile})
+
+def forget_password(request):
+    if request.method == 'POST':
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            UserModel = get_user_model()
+            email = form.cleaned_data['email']
+            users = UserModel.objects.filter(email=email)
+            if users.exists():
+                for user in users:
+                    uid = urlsafe_base64_encode(force_bytes(user.pk))
+                    token = default_token_generator.make_token(user)
+                    reset_link = request.build_absolute_uri(reverse('password-reset-confirm', args=[uid, token]))
+                    subject = 'Password Reset Request'
+                    message = render_to_string('password-reset-email-template.html', {
+                        'email': user.email,
+                        'fullname': user.first_name+' '+user.last_name,
+                        'reset_link': reset_link,
+                        'protocol': request.scheme,
+                        'domain': request.get_host(),
+                        'uid': uid,  # Pass uid to the template context
+                        'token': token,  # Pass token to the template context
+                    })
+                    return HttpResponse(message)
+
+            #send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], html_message=message)
+            #return redirect('password_reset_done')  # Redirect to the 'password_reset_done' view
+            else:
+                error_message = "No user found with the provided email address."
+                return render(request, 'forget-password.html', {'form': form, 'error_message': error_message})
+    else:
+        form = ForgotPasswordForm()
+    return render(request, 'forget-password.html', {'form': form})

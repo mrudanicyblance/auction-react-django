@@ -15,8 +15,17 @@
         </button>
         <ul class="top-navbar-area navbar-nav navbar-nav-right">
             <li class="nav-item nav-profile dropdown dropdown-animate">
+
                 <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-                    <img src="{% static 'admin/img/member-img/contact-2.jpg' %}" alt="profile" />
+                    {{ request.user.first_name }}
+                    {{ request.user.last_name }}
+                    <i class="arrow_carrot-down"></i>
+
+                    {% if request.user.profile.photo %}
+                        <img src="{{ MEDIA_URL }}{{ request.user.profile.photo.url }}" alt="profile" />
+                    {% else %}
+                        <img src="{% static 'admin/img/member-img/contact-2.jpg' %}" alt="default-profile" />
+                    {% endif %}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown profile-top" aria-labelledby="profileDropdown">
                     <a href="{% url 'myprofile' %}" class="dropdown-item"><i class="zmdi zmdi-account profile-icon" aria-hidden="true"></i> My profile</a>

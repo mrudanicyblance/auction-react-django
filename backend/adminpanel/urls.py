@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
+
+
 urlpatterns = [
     path('login/', views.admin_login, name='login'),
     path('logout/', views.admin_logout, name='logout'),
@@ -27,6 +30,12 @@ urlpatterns = [
     path('field/add/',views.add_field,name="createfield"),
     path('field/edit/',views.edit_field,name="editfield"),
     path('field/delete/',views.delete_field,name="deletefield"),
+
+
+    path('reset-password/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('reset-password/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password-reset-confirm.html"), name='password-reset-confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,66 +1,44 @@
 {% extends 'layouts/default.html' %}
 {% load static %}
 {% block content %}
-<script src="{% static 'js/category_view.js' %}"></script>
-<style>
-    .accordion-button:hover{
-        cursor: pointer;
-    }
-</style>
-<body>
-    <div class="container">
-        <div id="general_messages" style="display: none;"></div>
-        <div style="display: flex; border-bottom: 1px solid black">
-            <h2>Categories</h2>
-            <button class="btn btn-primary btn-sm m-2 ml-auto" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
-        </div>
-        <div id="categoryAccordion" class="accordion">
-            {% for category in categories %}
-            <div class="accordion-item m-1">
-                <div class="accordion-header" id="heading{{ forloop.counter }}">
-                    <h5 class="mb-0 d-flex">
-                        <div class="accordion-button border-0" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">
-                            {{ category.name }}
-                        </div>
-                        <div class="ml-auto">
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#addSubCategoryModal" data-category-id="{{ category.id }}">Add SubCategory</button>
-                            <button class="btn btn-warning" onclick="update_category(this)" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}"><i class='fa fa-edit'></i></button>
-                            <button class="btn btn-danger" onclick="delete_category(this)" data-category-id="{{ category.id }}"><i class='fa fa-trash'></i></button>
-                        </div>
-                    </h5>
-                </div>
-
-                <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ forloop.counter }}" data-parent="#categoryAccordion">
-                    <div class="accordion-body">
-                        <ul>
-                            {% if category.subcategories.all %}
-                                {% for subcategory in category.subcategories.all %}
-                                <li>{{ subcategory.subcat_name }}</li>
-                                {% endfor %}
-                            {% else %}
-                                <li>No subcategory yet</li>
-                            {% endif %}
-                        </ul>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12 height-card box-margin">
+            <div class="card">
+                <div class="card-body pb-0">
+                    <div class="d-flex justify-content-between align-items-center mb-20">
+                        <h6 class="card-title mb-0">Categories</h6>
+                        <button type="button" class="btn btn-primary waves-effect waves-light float-right mb-3" data-toggle="modal" data-target="#addCategoryModal">+ Add New</button>
                     </div>
+                    {% for category in categories %}
+                    <div id="accordion-{{ forloop.counter }}">
+                        <div class="card mb-2">
+                            <div class="card-header bg-primary">
+                                <a class="collapsed text-white" data-toggle="collapse" href="#accordion-collapse-{{ forloop.counter }}" aria-expanded="false">
+                                    {{ category.name }}
+                                </a>
+                            </div>
+                            <div id="accordion-collapse-{{ forloop.counter }}" class="collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordion-{{ forloop.counter }}">
+                                <div class="card-body">
+                                    <ul>
+                                        {% if category.subcategories.all %}
+                                            {% for subcategory in category.subcategories.all %}
+                                            <li>{{ subcategory.subcat_name }}</li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <li>No subcategory yet</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
                 </div>
             </div>
-            {% endfor %}
         </div>
-        <!-- <ul>
-            {% for category in categories %}
-            <li style="display: flex;">
-                <span class="m-1">{{ category.name }}</span>
-                <ul>
-                    {% for subcategory in category.subcategories.all %}
-                    <li>{{ subcategory.subcat_name }}</li>
-                    {% endfor %}
-                </ul>
-                <button class="btn btn-primary btn-sm ml-auto" data-toggle="modal" data-target="#addSubCategoryModal" data-category-id="{{ category.id }}">Add SubCategory</button>
-            </li>
-            {% endfor %}
-        </ul> -->
     </div>
-
+    <!-- / .row -->
     <!-- Add Category Modal -->
     <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -116,6 +94,6 @@
             </div>
         </div>
     </div>
-
-</body>
+</div>
+<script src="{% static 'js/category_view.js' %}"></script>
 {% endblock content %}
