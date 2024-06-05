@@ -150,7 +150,7 @@ def admin_login(request):
                         messages.error(request, f"{field}: {error}")
     else:
         form = EmailAuthenticationForm()  # Use custom form
-    return render(request, 'adminpanel/login.html', {'form': form})
+    return render(request, 'login.html', {'form': form})
 
 def admin_logout(request):
     logout(request)
@@ -160,7 +160,7 @@ def admin_logout(request):
 @login_required(login_url='login')
 def index(request):
     username = request.user.username
-    return render(request, 'adminpanel/index.html', {'username': username})
+    return render(request, 'index.html', {'username': username})
 
 #USERS PAGE
 @login_required(login_url='login')
@@ -171,7 +171,7 @@ def all_users(request):
     context = {
         'users': users_with_user_role
     }
-    return render(request, 'adminpanel/users/index.html',context)
+    return render(request, 'users/index.html',context)
 
 def generate_random_username():
     return 'user_' + ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
@@ -213,11 +213,11 @@ def create_users(request):
                 photo=form.cleaned_data['photo']
             )
             # Send email to the user
-            subject = 'Your account has been created'
-            html_message = render_to_string('adminpanel/users/email.html', {'username': user.username, 'password': random_password})
-            plain_message = strip_tags(html_message)
-            from_email = 'urmish.cyblance@gmail.com'  # Change this to your email address
-            to_email = user.email
+            #subject = 'Your account has been created'
+            #html_message = render_to_string('users/email.html', {'username': user.username, 'password': random_password})
+            #plain_message = strip_tags(html_message)
+            #from_email = 'urmish.cyblance@gmail.com'  # Change this to your email address
+            #to_email = user.email
 
             #send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
 
@@ -225,10 +225,10 @@ def create_users(request):
             return redirect('allusers')
         else:
             print("Form errors:", form.errors.as_json())
-            return render(request, 'adminpanel/users/create.html', {'form': form})
+            return render(request, 'users/create.html', {'form': form})
     else:
         form = SignUpForm()
-    return render(request, 'adminpanel/users/create.html', {'form': form})
+    return render(request, 'users/create.html', {'form': form})
 
 
 @login_required(login_url='login')
@@ -263,7 +263,7 @@ def edit_user(request, user_id):
     else:
         form = UserAndProfileForm(instance=user)
 
-    return render(request, 'adminpanel/users/edit.html', {'form': form, 'user': user, 'profile': profile})
+    return render(request, 'users/edit.html', {'form': form, 'user': user, 'profile': profile})
 
 @login_required(login_url='login')
 def delete_user(request, user_id):
@@ -278,7 +278,7 @@ def delete_user(request, user_id):
 
 @login_required(login_url='login')
 def my_profile (request):
-    return render(request, 'adminpanel/my-profile.html')
+    return render(request, 'my-profile.html')
 
 def forget_password (request):
-    return render(request, 'adminpanel/forget-password.html')
+    return render(request, 'forget-password.html')
