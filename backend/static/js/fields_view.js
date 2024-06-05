@@ -45,3 +45,6 @@ function update_field(button){
 
     $('#addFieldsModal').modal('show');
 }
+function delete_fields(button){
+    
+}
