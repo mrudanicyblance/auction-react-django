@@ -27,7 +27,7 @@ urlpatterns = [
 
 
     # field urls
-    path('fields/',views.view_fields,name="view_fields"),
+    path('fields/',views.view_fields,name="fields"),
     path('field/add/',views.add_field,name="add_field"),
     path('field/edit/',views.edit_field,name="edit_field"),
     path('field/delete/',views.delete_field,name="delete_field"),

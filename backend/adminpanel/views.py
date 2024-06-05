@@ -72,7 +72,7 @@ def delete_field(request):
 def view_category(request):
     categories = Category.objects.all()
     context = {'categories':categories}
-    return render(request,'categories/view_category.html',context=context)
+    return render(request,'categories/category.html',context=context)
 
 def add_category(request):
     if request.method == 'POST':
