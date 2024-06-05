@@ -1,0 +1,79 @@
+{% extends 'adminpanel/layouts/default.html' %}
+{% load static %}
+{% block content %}
+<script src="{% static 'js/fields_view.js' %}"></script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12 height-card box-margin">
+            <div class="card">
+                <div class="card-body pb-0">
+                <div id="general_messages" style="display: none;"></div>
+                <div style="display: flex; border-bottom: 1px solid black">
+                    <h2>Fields</h2>
+                    <button class="btn btn-primary btn-sm m-2 ml-auto" data-toggle="modal" data-target="#addFieldsModal">Add Field</button>
+                </div>
+                <div id="categoryAccordion" class="accordion">
+                    {% for field in fields %}
+                    <div class="accordion-item m-1">
+                        <div class="accordion-header" id="heading{{ forloop.counter }}">
+                            <h5 class="mb-0 d-flex">
+                                <div class="accordion-button border-0" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">
+                                    {{ field.field_name }}
+                                </div>
+                                <div class="ml-auto">
+                                    <button class="btn btn-warning" onclick="update_field(this)" data-field-id="{{ field.id }}" data-field-name="{{ field.field_name }}" data-field-type="{{ field.field_type }}"><i class='fa fa-edit'></i></button>
+                                    <button class="btn btn-danger" onclick="delete_field(this)" data-field-id="{{ field.id }}"><i class='fa fa-trash'></i></button>
+                                </div>
+                            </h5>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- add fields modal -->
+    <div class="modal fade" id="addFieldsModal" tabindex="-1" role="dialog" aria-labelledby="addFieldsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="addFields" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addFieldsModalLabel"><i class='bx bx-plus'></i>Add Field</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="fieldName">Field Name:</label>
+                            <input type="text" class="form-control" id="fieldName" name="field_name" required>
+                            <input type="hidden" id="fieldId" name="id">
+                        </div>
+                        <div class="form-group">
+                          <label for="fieldType">Select Field Type:</label>
+                          <select class="form-control" name="field_type" id="fieldType">
+                            <option value="textfield">Text Field</option>
+                            <option value="numberfield">Number Field</option>
+                            <option value="selectfield">Select Field</option>
+                            <option value="radiofield">Radio Field</option>
+                            <option value="checkboxfield">Checkbox Field</option>
+                            <option value="datefield">Date Field</option>
+                            <option value="timefield">Time Field</option>
+                            <option value="filefield">File Field</option>
+                            <option value="textareafield">Text Area Field</option>
+                            <option value="rangefield">Range Field</option>
+                          </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary btn-sm" value="Save Field">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
