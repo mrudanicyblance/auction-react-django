@@ -14,7 +14,8 @@ $(document).ready(function() {
         event.preventDefault();
 
         var categoryId = $('#categoryId').val();
-        var url = categoryId ? 'http://127.0.0.1:8000/categories/update/' : 'http://127.0.0.1:8000/categories/add/';
+        var url = categoryId ? 'http://127.0.0.1:8000/categories/edit/' : 'http://127.0.0.1:8000/categories/add/';
+        var form_type = categoryId ? 'updated' : 'created';
 
         $.ajax({
             type: 'POST',
@@ -24,10 +25,11 @@ $(document).ready(function() {
                 $('#addCategoryModal').modal('hide');
                 $('#general_messages').show()
                 if (response.status=='success'){
-                    $('#general_messages').addClass('alert alert-success').text('New category added!')
+                    $('#general_messages').addClass('alert alert-success').text(`Category ${form_type} successfully!`)
                     setTimeout(() => {
                         $('#general_messages').removeClass('alert alert-success').text('')
                         $('#general_messages').hide()
+                        location.reload()
                     }, 3000);
                 }
                 else{
@@ -35,9 +37,9 @@ $(document).ready(function() {
                     setTimeout(() => {
                         $('#general_messages').removeClass('alert alert-danger').text('')
                         $('#general_messages').hide()
+                        location.reload()
                     }, 3000);
                 }
-                location.reload()
             },
             error: function(response) {
                 alert(categoryId ? 'Error updating category' : 'Error adding category');
@@ -66,6 +68,7 @@ $(document).ready(function() {
                     setTimeout(() => {
                         $('#general_messages').removeClass('alert alert-success').text('')
                         $('#general_messages').hide()
+                        location.reload()
                     }, 3000);
                 }
                 else{
@@ -73,9 +76,9 @@ $(document).ready(function() {
                     setTimeout(() => {
                         $('#general_messages').removeClass('alert alert-danger').text('')
                         $('#general_messages').hide()
+                        location.reload()
                     }, 3000);
                 }
-                location.reload()
             },
             error: function(response) {
                 alert('Error adding subcategory');
@@ -150,8 +153,13 @@ function delete_category(button){
             data: {'id': categoryId,'csrfmiddlewaretoken': csrfToken},
             success: function (response) {
                 if (response.status === 'success') {
-                    alert('Category deleted successfully');
-                    location.reload()
+                    $('#general_messages').show()
+                    $('#general_messages').addClass('alert alert-success').text('Category deleted successfully!')
+                    setTimeout(() => {
+                        $('#general_messages').removeClass('alert alert-success').text('')
+                        $('#general_messages').hide()
+                        location.reload()
+                    }, 3000);
                 } else {
                     alert('Error: ' + response.message);
                 }

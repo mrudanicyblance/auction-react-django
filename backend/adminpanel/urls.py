@@ -21,12 +21,16 @@ urlpatterns = [
     # Categories & Subcategories URL
     path('categories/', views.view_category, name='categories'),
     path('categories/add/', views.add_category, name='createcategories'),
-    path('subcategories/add/', views.add_subcategory, name='createsubcategory'),
     path('categories/delete/',views.delete_category, name='deletecategory'),
     path('categories/edit/',views.update_category, name='updatecategory'),
+    path('subcategories/add/', views.add_subcategory, name='createsubcategory'),
+    path('subcategories/<int:id>/',views.view_subcategory,name="subcategories"),
 
+    # Subcategory & Fields link
+    path('subcategories/link-create/',views.link_subcat_field,name='link_subfields'),
+    path('subcategories/link-delete/',views.delete_link, name="delete_link"),
 
-    # field urls
+    # Field urls
     path('fields/',views.view_fields,name="fields"),
     path('field/add/',views.add_field,name="add_field"),
     path('field/edit/',views.edit_field,name="edit_field"),

@@ -41,10 +41,10 @@
                                 <td>{{ user.profile.address_line_1 }}, {{ user.profile.address_line_2 }}, {{ user.profile.country }}, {{ user.profile.state }}, {{ user.profile.city }} {{ user.profile.zipcode }}</td>
                                 <td>{{ user.profile.role }}</td>
                                 <td>
-                                    <a href="{% url 'editusers' user.id %}" class="btn btn-primary btn-sm">Edit</a>
+                                    <a href="{% url 'editusers' user.id %}" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
                                     <form method="post" action="{% url 'deleteuser' user.id %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
                                     </form>
                                 </td>
                                 <!-- Add more columns as needed -->

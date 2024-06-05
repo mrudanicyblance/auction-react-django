@@ -53,7 +53,7 @@ def edit_field(request):
         field.field_name = field_name
         field.field_type = field_type
         field.save()
-        return JsonResponse({'status':'success'})
+        return JsonResponse({'status':'success','field_name':field_name})
     except Exception as e:
         return JsonResponse({'status':'error','message':str(e)})
 
@@ -61,11 +61,13 @@ def edit_field(request):
 @csrf_exempt
 def delete_field(request):
     try:
-        field_id = request.POST.get('id')
-        field = Category.objects.get(id=field_id)
+        field_id = request.POST.get('fieldId')
+        print(field_id)
+        field = Field.objects.get(id=field_id)
         field.delete()
         return JsonResponse({'status':'success'})
-    except:
+    except Exception as e:
+        print(e)
         return JsonResponse({'status':'error'})
 
 # category functions
@@ -83,9 +85,9 @@ def add_category(request):
                 return HttpResponseBadRequest("Name is required")
 
             category = Category.objects.create(name=name)
-            return JsonResponse({'id': category.id, 'name': category.name})
+            return JsonResponse({'status':'success','id': category.id, 'name': category.name})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'status':'error','error': str(e)}, status=500)
     else:
         return HttpResponseBadRequest("Invalid request method")
 
@@ -133,6 +135,42 @@ def add_subcategory(request):
         return JsonResponse({'status': 'success'})
     else:
         return JsonResponse({'status':'error'})
+
+def view_subcategory(request,id):
+    subcategory = SubCategory.objects.get(pk=id)
+    fields_of_subcategory = SubCategoryField.objects.filter(subcategory=subcategory)
+    all_fields = Field.objects.all()
+    context = {'subcategory':subcategory,'fields_of_subcategory':fields_of_subcategory,'all_fields':all_fields}
+    return render(request,'categories/subcategory.html',context=context)
+
+# linking subcategory and field
+def link_subcat_field(request):
+    if request.method == 'POST':
+        selected_fields = request.POST.getlist('fieldchoice')
+        subcat_id = request.POST.get('subcategory_id')
+
+        try:
+            subcategory = get_object_or_404(SubCategory, id=subcat_id)
+
+            for field_id in selected_fields:
+                field = get_object_or_404(Field, id=field_id)
+                SubCategoryField.objects.get_or_create(subcategory=subcategory, field=field)
+
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+def delete_link(request):
+    if request.method == 'POST':
+        linkId = request.POST.get('linkId')
+        subcatlink = get_object_or_404(SubCategoryField, id=linkId)
+        if subcatlink:
+            subcatlink.delete()
+            return JsonResponse({'status':'success'})
+        else:
+            return JsonResponse({'status':'error'})
 
 # account functions
 #ADMIN LOGIN PAGE
