@@ -1,5 +1,100 @@
 {% extends 'layouts/default.html' %}
 {% load static %}
 {% block content %}
+<script src="{% static 'js/fields_view.js' %}"></script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card box-margin">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5>{{subcategory.subcat_name}}</h5>
+                        <button type="button" class="btn btn-primary waves-effect waves-light float-right mb-3" data-toggle="modal" data-target="#addFields">Link Fields</button>
+                    </div>
+                    <div id="general_messages" style="display: none;"></div>
+                    <div class="col-12">
+                        <div class="card box-margin">
+                            <div class="card-body">
+                                <div class="basic-table-area">
+                                    <!--Basic Table-->
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead class="text-uppercase">
+                                                <tr>
+                                                    <th>Sr. No.</th>
+                                                    <th>Field</th>
+                                                    <th>Field Type</th>
+                                                    <th>Delete</th>
+                                                </tr>
+                                            </thead>
 
-{% endblock content %}
+                                            <tbody>
+                                                {% if fields_of_subcategory %}
+                                                    {% for field in fields_of_subcategory %}
+                                                        <tr class="text-capitalize">
+                                                            <td class="align-middle text-center">
+                                                                {{forloop.counter}}.
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                {{field.field.field_name}}
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                {{field.field.field_type}}
+                                                            </td>
+                                                            <td class="justify-content-between">
+                                                                <span onclick="delete_link(this)" data-link-id="{{field.id}}">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="4">No Fields Yet Linked</td>
+                                                    </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subcategory link with a field -->
+    <div class="modal fade" id="addFields" tabindex="-1" role="dialog" aria-labelledby="addFieldsLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="addSubcategoryFields" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addFieldsLabel"><i class='bx bx-plus'></i>Link Field</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="fieldchoice">Choose Fields:</label>
+                                <select multiple class="form-control rounded-0" id="fieldchoice" name="fieldchoice">
+                                    {% for field in all_fields %}
+                                        <option value="{{field.id}}">{{field.field_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            <input type="hidden" id="subcategory_id" name="subcategory_id" value="{{subcategory.id}}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save Fields</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

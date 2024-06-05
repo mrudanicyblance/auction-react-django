@@ -14,7 +14,8 @@ $(document).ready(function() {
         event.preventDefault();
 
         var categoryId = $('#categoryId').val();
-        var url = categoryId ? 'http://127.0.0.1:8000/categories/update/' : 'http://127.0.0.1:8000/categories/add/';
+        var url = categoryId ? 'http://127.0.0.1:8000/categories/edit/' : 'http://127.0.0.1:8000/categories/add/';
+        var form_type = categoryId ? 'updated' : 'created';
 
         $.ajax({
             type: 'POST',
@@ -24,7 +25,7 @@ $(document).ready(function() {
                 $('#addCategoryModal').modal('hide');
                 $('#general_messages').show()
                 if (response.status=='success'){
-                    $('#general_messages').addClass('alert alert-success').text('New category added!')
+                    $('#general_messages').addClass('alert alert-success').text(`Category ${form_type} successfully!`)
                     setTimeout(() => {
                         $('#general_messages').removeClass('alert alert-success').text('')
                         $('#general_messages').hide()
