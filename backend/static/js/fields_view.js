@@ -45,3 +45,34 @@ function update_field(button){
 
     $('#addFieldsModal').modal('show');
 }
+
+function delete_field(button){
+    var fieldId = $(button).data('field-id');
+    var result = confirm('Are you sure you want to delete this field?')
+    if (result){
+        $.ajax({
+            type: "post",
+            url: "https://127.0.0.1:8000/field/delete/",
+            data: {'fieldId':fieldId},
+            success: function (response) {
+                if (response.status == 'success'){
+                    // alert('added')
+                    $('#general_messages').show()
+                    $('#general_messages').addClass('alert alert-success').text(`Field ${response.field_name} has been deleted!`)
+                    setTimeout(() => {
+                        $('#general_messages').hide()
+                        $('#general_messages').removeClass('alert alert-success').text(``)
+                    }, 3000);
+                }else{
+                    // alert('error')
+                    $('#general_messages').show()
+                    $('#general_messages').addClass('alert alert-danger').text(`Some error occured`)
+                    setTimeout(() => {
+                        $('#general_messages').hide()
+                        $('#general_messages').removeClass('alert alert-danger').text(``)
+                    }, 3000);
+                }
+            }
+        });
+    }
+}

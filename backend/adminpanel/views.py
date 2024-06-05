@@ -24,7 +24,7 @@ from django.contrib import messages
 def view_fields(request):
     fields = Field.objects.all()
     context = {'fields':fields}
-    return render(request,'categories/view_fields.html',context=context)
+    return render(request,'categories/fields.html',context=context)
 
 @require_POST
 @csrf_exempt
