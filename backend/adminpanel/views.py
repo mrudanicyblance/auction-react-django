@@ -53,7 +53,7 @@ def edit_field(request):
         field.field_name = field_name
         field.field_type = field_type
         field.save()
-        return JsonResponse({'status':'success'})
+        return JsonResponse({'status':'success','field_name':field_name})
     except Exception as e:
         return JsonResponse({'status':'error','message':str(e)})
 
@@ -61,11 +61,13 @@ def edit_field(request):
 @csrf_exempt
 def delete_field(request):
     try:
-        field_id = request.POST.get('id')
-        field = Category.objects.get(id=field_id)
+        field_id = request.POST.get('fieldId')
+        print(field_id)
+        field = Field.objects.get(id=field_id)
         field.delete()
         return JsonResponse({'status':'success'})
-    except:
+    except Exception as e:
+        print(e)
         return JsonResponse({'status':'error'})
 
 # category functions
@@ -83,9 +85,9 @@ def add_category(request):
                 return HttpResponseBadRequest("Name is required")
 
             category = Category.objects.create(name=name)
-            return JsonResponse({'id': category.id, 'name': category.name})
+            return JsonResponse({'status':'success','id': category.id, 'name': category.name})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'status':'error','error': str(e)}, status=500)
     else:
         return HttpResponseBadRequest("Invalid request method")
 
