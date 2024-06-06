@@ -1,0 +1,26 @@
+{% extends 'layouts/default.html' %}
+{% load static %}
+{% block content %}
+<script src="{% static 'js/fields_view.js' %}"></script>
+<form id="addOptionForm" method="post" action="{% url 'add-option' field.id %}">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title" id="addOptionModalLabel"><i class='bx bx-plus'></i> Add Option</h5>
+    </div>
+    <div class="modal-body">
+        <div id="dynamic-options">
+            <div class="form-group" id="option-1">
+                <label for="newOptionValue1">Option Value 1:</label>
+                <input type="text" class="form-control" id="newOptionValue1" name="new_options[]" required>
+                <button type="button" class="btn btn-danger btn-sm remove-field m-2" data-option-id="1">Remove</button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="add-field">Add Another Option</button>
+        <div id="error-message" style="color: red; display: none;"></div>
+    </div>
+    <div class="modal-footer">
+        <a href="{% url 'field-option' field.id %}" class="btn btn-secondary btn-sm" data-dismiss="modal">Go Back</a>
+        <input type="submit" class="btn btn-primary btn-sm" value="Save Option">
+    </div>
+</form>
+{% endblock content %}

@@ -23,7 +23,8 @@ from django.contrib import messages
 # fields functions
 def view_fields(request):
     fields = Field.objects.all()
-    context = {'fields':fields}
+    option_fields = ['selectfield','checkboxfield','radiofield']
+    context = {'fields':fields,'option_fields':option_fields}
     return render(request,'categories/fields.html',context=context)
 
 @require_POST
@@ -70,19 +71,85 @@ def delete_field(request):
         print(e)
         return JsonResponse({'status':'error'})
 
+# adding options in fields
+def field_option_view(request, field_id):
+    field = get_object_or_404(Field, id=field_id)
+    options = SubCategoryOptionField.objects.filter(field=field)
+
+    return render(request, 'categories/field-options.html', {'field': field,'options': options})
+
+def add_option(request, field_id):
+    if request.method == 'POST':
+        field = get_object_or_404(Field, id=field_id)
+        new_options = request.POST.getlist('new_options[]')
+
+        if len(new_options) != len(set(new_options)):
+            return JsonResponse({'status': 'error', 'message': 'Duplicate values are not allowed.'})
+
+        existing_options = SubCategoryOptionField.objects.filter(field=field).values_list('option_value', flat=True)
+        for option_value in new_options:
+            if option_value in existing_options:
+                return JsonResponse({'status': 'error', 'message': f'The value "{option_value}" already exists.'})
+
+        for option_value in new_options:
+            if option_value:
+                SubCategoryOptionField.objects.create(field=field, option_value=option_value)
+
+        return JsonResponse({'status': 'success','location_url':reverse('field-option', args=[field_id])})
+
+    field = get_object_or_404(Field, id=field_id)
+    return render(request,'categories/option-addition-form.html',{'field':field})
+
+def update_option(request):
+    if request.method == 'POST':
+        option_id = request.POST.get('option_id')
+        option_value = request.POST.get('option_value')
+        field_id = request.POST.get('field_id')
+
+        if option_id and option_value:
+            option = get_object_or_404(SubCategoryOptionField, id=option_id)
+            field = option.field
+
+            existing_options = SubCategoryOptionField.objects.filter(field=field).exclude(id=option_id).values_list('option_value', flat=True)
+            if option_value in existing_options:
+                return JsonResponse({'status': 'error', 'message': 'This option value already exists.'})
+
+            option.option_value = option_value
+            option.save()
+            return JsonResponse({'status': 'success', 'redirect_url': reverse('field-option', args=[field_id])})
+
+    return redirect('fields')
+
+def delete_option(request):
+    if request.method == 'POST':
+        field_id = request.POST.get('field_id')
+        option_id = request.POST.get('option_id')
+
+        if option_id:
+            option = get_object_or_404(SubCategoryOptionField, id=option_id)
+            option.delete()
+            return redirect('field-option', field_id=field_id)
+
+    return redirect('fields')
+
 # category functions
 def view_category(request):
     categories = Category.objects.all()
     context = {'categories':categories}
     return render(request,'categories/category.html',context=context)
 
+@csrf_exempt
+@require_POST
 def add_category(request):
     if request.method == 'POST':
         try:
-            print('add_reached')
             name = request.POST.get('name')
             if not name:
                 return HttpResponseBadRequest("Name is required")
+
+            # Check if category name already exists
+            if Category.objects.filter(name=name).exists():
+                return JsonResponse({'status':'error','message':'Category with this name already exists'})
 
             category = Category.objects.create(name=name)
             return JsonResponse({'status':'success','id': category.id, 'name': category.name})
@@ -99,6 +166,10 @@ def update_category(request):
         category_name = request.POST.get('name')
         if not category_name:
             return JsonResponse({'status': 'error', 'message': 'Category name cannot be empty'})
+
+        # Check if category name already exists excluding the current category
+        if Category.objects.exclude(id=category_id).filter(name=category_name).exists():
+            return JsonResponse({'status': 'error', 'message': 'Category with this name already exists'})
 
         category = Category.objects.get(id=category_id)
         category.name = category_name
@@ -124,17 +195,25 @@ def delete_category(request):
         return JsonResponse({'status': 'error', 'message': str(e)})
 
 # subcategory functions
+@csrf_exempt
+@require_POST
 def add_subcategory(request):
     if request.method == 'POST':
-        print('add_reached_sub')
-        print(request.POST)
-        subcat_name = request.POST.get('subcat_name')
-        category_id = request.POST.get('category_id')
-        category = get_object_or_404(Category, id=category_id)
-        subcategory = SubCategory.objects.create(category=category, subcat_name=subcat_name)
-        return JsonResponse({'status': 'success'})
+        try:
+            subcat_name = request.POST.get('subcat_name')
+            category_id = request.POST.get('category_id')
+            category = get_object_or_404(Category, id=category_id)
+
+            # Check if subcategory name already exists for the given category
+            if SubCategory.objects.filter(category=category, subcat_name=subcat_name).exists():
+                return JsonResponse({'status':'error','message':'Subcategory with this name already exists for the selected category'}, status=400)
+
+            subcategory = SubCategory.objects.create(category=category, subcat_name=subcat_name)
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'error': str(e)}, status=500)
     else:
-        return JsonResponse({'status':'error'})
+        return HttpResponseBadRequest("Invalid request method")
 
 def view_subcategory(request,id):
     subcategory = SubCategory.objects.get(pk=id)
@@ -142,6 +221,31 @@ def view_subcategory(request,id):
     all_fields = Field.objects.all()
     context = {'subcategory':subcategory,'fields_of_subcategory':fields_of_subcategory,'all_fields':all_fields}
     return render(request,'categories/subcategory.html',context=context)
+
+@require_POST
+@csrf_exempt
+def update_subcategory(request):
+    try:
+        subcategory_id = request.POST.get('subcategory_id')
+        subcategory_name = request.POST.get('subcategory_name')
+        category_id = request.POST.get('category_id')
+        category = get_object_or_404(Category, id=category_id)
+
+        # Check if subcategory name already exists for the given category
+        if SubCategory.objects.exclude(id=subcategory_id).filter(category=category, subcat_name=subcategory_name).exists():
+            return JsonResponse({'status': 'error', 'message': 'Subcategory with this name already exists for the selected category'}, status=400)
+
+        subcategory = SubCategory.objects.get(id=subcategory_id)
+        subcategory.subcat_name = subcategory_name
+        subcategory.category = category
+        subcategory.save()
+
+        return JsonResponse({'status': 'success'})
+    except SubCategory.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Subcategory does not exist'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
 
 # linking subcategory and field
 def link_subcat_field(request):

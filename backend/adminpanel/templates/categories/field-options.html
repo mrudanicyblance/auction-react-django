@@ -1,0 +1,115 @@
+{% extends 'layouts/default.html' %}
+{% load static %}
+{% block content %}
+<script src="{% static 'js/fields_view.js' %}"></script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12 height-card box-margin">
+            <div class="card">
+                <div class="card-body pb-0">
+                    <div id="general_messages" style="display: none;"></div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0">Options for Field: {{ field.field_name }}</h6>
+                        <span class="float-right">
+                            <a class="btn btn-primary waves-effect waves-light mb-3" href="{% url 'fields' %}">Go Back</a>
+                            <a href="{% url 'add-option' field.id %}" class="btn btn-primary waves-effect waves-light mb-3">Add Option</a>
+                        </span>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Option Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if options %}
+                                {% for option in options %}
+                                    <tr>
+                                        <td>{{ option.option_value }}</td>
+                                        <td>
+                                            <a class="text-secondary mx-2 update-option-button" data-toggle="modal" data-target="#updateOptionModal" data-option-id="{{ option.id }}" data-option-value="{{ option.option_value }}" data-field-id="{{ field.id }}"><i class="fa fa-pencil"></i></a>
+                                            <form method="post" action="{% url 'delete-option' %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="option_id" value="{{ option.id }}">
+                                                <input type="hidden" name="field_id" value="{{ field.id }}">
+                                                <button type="submit" class="btn text-secondary mx-2"><i class="fa fa-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                    <tr>
+                                        <td colspan="2">No options yet</td>
+                                    </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Option Modal -->
+    <!-- <div class="modal fade" id="addOptionModal" tabindex="-1" role="dialog" aria-labelledby="addOptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="addOptionForm" method="post" action="{% url 'add-option' field.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addOptionModalLabel"><i class='bx bx-plus'></i> Add Option</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="dynamic-options">
+                            <div class="form-group">
+                                <label for="newOptionValue1">Option Value 1:</label>
+                                <input type="text" class="form-control" id="newOptionValue1" name="new_options[]" required>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" id="add-field">Add Another Option</button>
+                        <div id="error-message" style="color: red; display: none;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary btn-sm" value="Save Option">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Update Option Modal -->
+    <div class="modal fade" id="updateOptionModal" tabindex="-1" role="dialog" aria-labelledby="updateOptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="updateOptionForm" method="post" action="{% url 'update-option' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="option_id">
+                    <input type="hidden" name="field_id">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateOptionModalLabel"><i class='bx bx-edit'></i> Update Option</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="optionValue">Option Value:</label>
+                            <input type="text" class="form-control" id="optionValue" name="option_value" required>
+                        </div>
+                        <div id="error-update-message" style="color: red; display: none;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary btn-sm" value="Save Changes">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
