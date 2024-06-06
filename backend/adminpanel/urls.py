@@ -35,6 +35,10 @@ urlpatterns = [
     path('field/add/',views.add_field,name="add_field"),
     path('field/edit/',views.edit_field,name="edit_field"),
     path('field/delete/',views.delete_field,name="delete_field"),
+    path('field-option/<int:field_id>/', views.field_option_view, name='field-option'),
+    path('field-option/<int:field_id>/add-option/', views.add_option, name='add-option'),
+    path('field-option/update-option/', views.update_option, name='update-option'),
+    path('field-option/delete-option/', views.delete_option, name='delete-option'),
 
 
     path('reset-password/', auth_views.PasswordResetView.as_view(), name='password_reset'),

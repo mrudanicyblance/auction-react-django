@@ -22,6 +22,9 @@
                                         {{ field.field_name }}
                                     </div>
                                     <div class="ml-auto">
+                                        {% if field.field_type in option_fields %}
+                                            <a href="{% url 'field-option' field.id %}" class="mr-2 text-white">Show options</a>
+                                        {% endif %}
                                         <a class="mr-2" onclick="update_field(this)" data-field-id="{{ field.id }}" data-field-name="{{ field.field_name }}" data-field-type="{{ field.field_type }}"><i class='fa fa-edit'></i></a>
                                         <a class="mr-2" onclick="delete_field(this)" data-field-id="{{ field.id }}"><i class='fa fa-trash'></i></a>
                                     </div>

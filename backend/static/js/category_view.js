@@ -30,7 +30,7 @@ $(document).ready(function() {
                         $('#general_messages').removeClass('alert alert-success').text('')
                         $('#general_messages').hide()
                         location.reload()
-                    }, 3000);
+                    }, 2000);
                 }
                 else{
                     $('#general_messages').addClass('alert alert-danger').text('Error in category addition!')
@@ -38,7 +38,7 @@ $(document).ready(function() {
                         $('#general_messages').removeClass('alert alert-danger').text('')
                         $('#general_messages').hide()
                         location.reload()
-                    }, 3000);
+                    }, 2000);
                 }
             },
             error: function(response) {
@@ -69,7 +69,7 @@ $(document).ready(function() {
                         $('#general_messages').removeClass('alert alert-success').text('')
                         $('#general_messages').hide()
                         location.reload()
-                    }, 3000);
+                    }, 2000);
                 }
                 else{
                     $('#general_messages').addClass('alert alert-danger').text('Error in subcategory addition!')
@@ -77,7 +77,7 @@ $(document).ready(function() {
                         $('#general_messages').removeClass('alert alert-danger').text('')
                         $('#general_messages').hide()
                         location.reload()
-                    }, 3000);
+                    }, 2000);
                 }
             },
             error: function(response) {
@@ -159,7 +159,7 @@ function delete_category(button){
                         $('#general_messages').removeClass('alert alert-success').text('')
                         $('#general_messages').hide()
                         location.reload()
-                    }, 3000);
+                    }, 2000);
                 } else {
                     alert('Error: ' + response.message);
                 }

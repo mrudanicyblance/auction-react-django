@@ -16,7 +16,7 @@ $(document).ready(function () {
                         $('#general_messages').hide()
                         $('#general_messages').removeClass('alert alert-success').text(``)
                         location.reload();
-                    }, 3000);
+                    }, 2000);
                     // alert('Fields successfully linked to subcategory.');
                 } else {
                     // alert('Error: ' + response.message);
@@ -27,7 +27,7 @@ $(document).ready(function () {
                         $('#general_messages').hide()
                         $('#general_messages').removeClass('alert alert-danger').text(``)
                         location.reload();
-                    }, 3000);
+                    }, 2000);
                 }
             },
             error: function(xhr, status, error) {
@@ -56,7 +56,7 @@ $(document).ready(function () {
                         $('#general_messages').hide()
                         $('#general_messages').removeClass('alert alert-success').text(``)
                         location.reload();
-                    }, 3000);
+                    }, 2000);
                 }else{
                     // alert('error')
                     $('#general_messages').show()
@@ -66,13 +66,107 @@ $(document).ready(function () {
                         $('#general_messages').hide()
                         $('#general_messages').removeClass('alert alert-danger').text(``)
                         location.reload();
-                    }, 3000);
+                    }, 2000);
                 }
             }
         });
     })
+
+    // dynamic form
+    // adds input field in field-options.html
+    var fieldCount = 1;
+    $('#add-field').click(function() {
+        fieldCount++;
+        var newField = `
+            <div class="form-group">
+                <label for="newOptionValue${fieldCount}">Option Value ${fieldCount}:</label>
+                <input type="text" class="form-control" id="newOptionValue${fieldCount}" name="new_options[]" required>
+            </div>
+        `;
+        $('#dynamic-options').append(newField);
+    });
+
+    $('#addOptionForm').submit(function(event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: formData,
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#addOptionModal').modal('hide')
+                    $('#general_messages').show();
+                    $('#general_messages').addClass('alert alert-success').text('Options added successfully !');
+                    setTimeout(() => {
+                        $('#general_messages').hide();
+                        $('#general_messages').removeClass('alert alert-success').text('');
+                        location.reload();
+                    }, 3000);
+                } else {
+                    $('#error-message').show();
+                    $('#error-message').text(response.message);
+                    setTimeout(() => {
+                        $('#error-message').hide();
+                        $('#error-message').text('');
+                    }, 3000);
+                    // alert(response.message);
+                }
+            },
+            error: function(error) {
+                console.error('An error occurred:', error);
+            }
+        });
+    });
+
+    // update options modal
+    $('.update-option-button').click(function() {
+        var optionId = $(this).data('option-id');
+        var optionValue = $(this).data('option-value');
+        var fieldId = $(this).data('field-id');
+
+        $('#updateOptionModal input[name="option_id"]').val(optionId);
+        $('#updateOptionModal input[name="option_value"]').val(optionValue);
+        $('#updateOptionModal input[name="field_id"]').val(fieldId);
+    });
+
+    $('#updateOptionForm').submit(function(event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: formData,
+            success: function(response) {
+                if (response.status == 'success') {
+                    $('#updateOptionModal').modal('hide')
+                    $('#general_messages').show();
+                    $('#general_messages').addClass('alert alert-success').text('Option updated successfully !');
+                    setTimeout(() => {
+                        $('#general_messages').hide();
+                        $('#general_messages').removeClass('alert alert-success').text('');
+                        location.reload();
+                    }, 3000);
+                } else {
+                    $('#error-update-message').show()
+                    $('#error-update-message').text(response.message);
+                    setTimeout(() => {
+                        $('#error-update-message').hide();
+                        $('#error-update-message').text('');
+                    }, 3000);
+                    // console.log(response)
+                }
+            },
+            error: function(error) {
+                console.error('An error occurred:', error);
+            }
+        });
+    });
 });
 
+// update fields
 function update_field(button){
     var fieldId = $(button).data('field-id');
     var fieldName = $(button).data('field-name');
@@ -84,6 +178,7 @@ function update_field(button){
 
     $('#fieldId').val(fieldId);
     $('#fieldName').val(fieldName);
+    $('#fieldType').val(fieldType);
 
     $('#addFieldsModal').modal('show');
 }
@@ -106,7 +201,7 @@ function delete_field(button){
                         $('#general_messages').hide()
                         $('#general_messages').removeClass('alert alert-success').text(``)
                         location.reload()
-                    }, 3000);
+                    }, 2000);
                 }else{
                     // alert('error')
                     $('#general_messages').show()
@@ -115,7 +210,7 @@ function delete_field(button){
                         $('#general_messages').hide()
                         $('#general_messages').removeClass('alert alert-danger').text(``)
                         location.reload()
-                    }, 3000);
+                    }, 2000);
                 }
             }
         });
@@ -136,22 +231,22 @@ function delete_link(button){
             success: function (response) {
                 if (response.status == 'success'){
                     // alert('added')
-                    $('#general_messages').show()
-                    $('#general_messages').addClass('alert alert-success').text(`Link has been deleted!`)
+                    $('#general_messages').show();
+                    $('#general_messages').addClass('alert alert-success').text(`Link has been deleted!`);
                     setTimeout(() => {
-                        $('#general_messages').hide()
-                        $('#general_messages').removeClass('alert alert-success').text(``)
-                        location.reload()
-                    }, 3000);
+                        $('#general_messages').hide();
+                        $('#general_messages').removeClass('alert alert-success').text(``);
+                        location.reload();
+                    }, 2000);
                 }else{
                     // alert('error')
-                    $('#general_messages').show()
-                    $('#general_messages').addClass('alert alert-danger').text(`Some error occured`)
+                    $('#general_messages').show();
+                    $('#general_messages').addClass('alert alert-danger').text(`Some error occured`);
                     setTimeout(() => {
-                        $('#general_messages').hide()
-                        $('#general_messages').removeClass('alert alert-danger').text(``)
-                        location.reload()
-                    }, 3000);
+                        $('#general_messages').hide();
+                        $('#general_messages').removeClass('alert alert-danger').text(``);
+                        location.reload();
+                    }, 2000);
                 }
             }
         });

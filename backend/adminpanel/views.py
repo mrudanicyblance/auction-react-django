@@ -23,7 +23,8 @@ from django.contrib import messages
 # fields functions
 def view_fields(request):
     fields = Field.objects.all()
-    context = {'fields':fields}
+    option_fields = ['selectfield','checkboxfield','radiofield']
+    context = {'fields':fields,'option_fields':option_fields}
     return render(request,'categories/fields.html',context=context)
 
 @require_POST
@@ -69,6 +70,66 @@ def delete_field(request):
     except Exception as e:
         print(e)
         return JsonResponse({'status':'error'})
+
+# adding options in fields
+def field_option_view(request, field_id):
+    field = get_object_or_404(Field, id=field_id)
+    options = SubCategoryOptionField.objects.filter(field=field)
+
+    return render(request, 'categories/field-options.html', {'field': field,'options': options})
+
+def add_option(request, field_id):
+    if request.method == 'POST':
+        field = get_object_or_404(Field, id=field_id)
+        new_options = request.POST.getlist('new_options[]')
+
+        if len(new_options) != len(set(new_options)):
+            return JsonResponse({'status': 'error', 'message': 'Duplicate values are not allowed.'})
+
+        existing_options = SubCategoryOptionField.objects.filter(field=field).values_list('option_value', flat=True)
+        for option_value in new_options:
+            if option_value in existing_options:
+                return JsonResponse({'status': 'error', 'message': f'The value "{option_value}" already exists.'})
+
+        for option_value in new_options:
+            if option_value:
+                SubCategoryOptionField.objects.create(field=field, option_value=option_value)
+
+        return JsonResponse({'status': 'success'})
+
+    return redirect('fields')
+
+def update_option(request):
+    if request.method == 'POST':
+        option_id = request.POST.get('option_id')
+        option_value = request.POST.get('option_value')
+        field_id = request.POST.get('field_id')
+
+        if option_id and option_value:
+            option = get_object_or_404(SubCategoryOptionField, id=option_id)
+            field = option.field
+
+            existing_options = SubCategoryOptionField.objects.filter(field=field).exclude(id=option_id).values_list('option_value', flat=True)
+            if option_value in existing_options:
+                return JsonResponse({'status': 'error', 'message': 'This option value already exists.'})
+
+            option.option_value = option_value
+            option.save()
+            return JsonResponse({'status': 'success', 'redirect_url': reverse('field-option', args=[field_id])})
+
+    return redirect('fields')
+
+def delete_option(request):
+    if request.method == 'POST':
+        field_id = request.POST.get('field_id')
+        option_id = request.POST.get('option_id')
+
+        if option_id:
+            option = get_object_or_404(SubCategoryOptionField, id=option_id)
+            option.delete()
+            return redirect('field-option', field_id=field_id)
+
+    return redirect('fields')
 
 # category functions
 def view_category(request):
