@@ -74,16 +74,23 @@ $(document).ready(function() {
             data: $('#addSubCategoryForm').serialize(),
             success: function(response) {
                 $('#addSubCategoryModal').modal('hide');
-                $('#general_messages').show();
-                if (response.status == 'success') {
-                    $('#general_messages').addClass('alert alert-success').text(`Subcategory ${form_type} successfully!`);
-                } else {
-                    $('#general_messages').addClass('alert alert-danger').text(response.message);
+                $('#general_messages').show()
+                if (response.status=='success'){
+                    $('#general_messages').addClass('alert alert-success').text('New subcategory added!')
+                    setTimeout(() => {
+                        $('#general_messages').removeClass('alert alert-success').text('')
+                        $('#general_messages').hide()
+                        location.reload()
+                    }, 2000);
                 }
-                setTimeout(function() {
-                    $('#general_messages').removeClass('alert alert-success alert-danger').text('').hide();
-                    location.reload();
-                }, 2000);
+                else{
+                    $('#general_messages').addClass('alert alert-danger').text('Error in subcategory addition!')
+                    setTimeout(() => {
+                        $('#general_messages').removeClass('alert alert-danger').text('')
+                        $('#general_messages').hide()
+                        location.reload()
+                    }, 2000);
+                }
             },
             error: function(response) {
                 alert('Error in subcategory operation');

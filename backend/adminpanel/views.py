@@ -222,32 +222,6 @@ def view_subcategory(request,id):
     context = {'subcategory':subcategory,'fields_of_subcategory':fields_of_subcategory,'all_fields':all_fields}
     return render(request,'categories/subcategory.html',context=context)
 
-@require_POST
-@csrf_exempt
-def update_subcategory(request):
-    try:
-        subcategory_id = request.POST.get('subcategory_id')
-        subcategory_name = request.POST.get('subcategory_name')
-        category_id = request.POST.get('category_id')
-        print(subcategory_id,subcategory_name,category_id)
-        category = get_object_or_404(Category, id=category_id)
-
-        # Check if subcategory name already exists for the given category
-        if SubCategory.objects.exclude(id=subcategory_id).filter(category=category, subcat_name=subcategory_name).exists():
-            return JsonResponse({'status': 'error', 'message': 'Subcategory with this name already exists for the selected category'}, status=400)
-
-        subcategory = SubCategory.objects.get(id=subcategory_id)
-        subcategory.subcat_name = subcategory_name
-        subcategory.category = category
-        subcategory.save()
-
-        return JsonResponse({'status': 'success'})
-    except SubCategory.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Subcategory does not exist'})
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
-
-
 # linking subcategory and field
 def link_subcat_field(request):
     if request.method == 'POST':
