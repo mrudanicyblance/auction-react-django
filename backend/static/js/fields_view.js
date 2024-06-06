@@ -75,15 +75,23 @@ $(document).ready(function () {
     // dynamic form
     // adds input field in field-options.html
     var fieldCount = 1;
+
     $('#add-field').click(function() {
         fieldCount++;
         var newField = `
-            <div class="form-group">
+            <div class="form-group" id="option-${fieldCount}">
                 <label for="newOptionValue${fieldCount}">Option Value ${fieldCount}:</label>
                 <input type="text" class="form-control" id="newOptionValue${fieldCount}" name="new_options[]" required>
+                <button type="button" class="btn btn-danger btn-sm remove-field" data-option-id="${fieldCount}">Remove</button>
             </div>
         `;
         $('#dynamic-options').append(newField);
+    });
+
+    // Event delegation to handle dynamic removal of fields
+    $('#dynamic-options').on('click', '.remove-field', function() {
+        var optionId = $(this).data('option-id');
+        $('#option-' + optionId).remove();
     });
 
     $('#addOptionForm').submit(function(event) {
@@ -96,13 +104,12 @@ $(document).ready(function () {
             data: formData,
             success: function(response) {
                 if (response.status === 'success') {
-                    $('#addOptionModal').modal('hide')
+                    location.href = response.location_url;
                     $('#general_messages').show();
                     $('#general_messages').addClass('alert alert-success').text('Options added successfully !');
                     setTimeout(() => {
                         $('#general_messages').hide();
                         $('#general_messages').removeClass('alert alert-success').text('');
-                        location.reload();
                     }, 3000);
                 } else {
                     $('#error-message').show();

@@ -1,6 +1,7 @@
 {% extends 'layouts/default.html' %}
 {% load static %}
 {% block content %}
+<script src="{% static 'js/category_view.js' %}"></script>
 <script src="{% static 'js/fields_view.js' %}"></script>
 <div class="container-fluid">
     <div class="row">
@@ -8,8 +9,11 @@
             <div class="card box-margin">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5>{{subcategory.subcat_name}}</h5>
-                        <button type="button" class="btn btn-primary waves-effect waves-light float-right mb-3" data-toggle="modal" data-target="#addFields">Link Fields</button>
+                        <h5 class="text-capitalize">{{subcategory.subcat_name}}</h5>
+                        <div class="float-right">
+                            <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#addSubCategoryModal" data-category-id="{{ category.id }}">Update SubCategory</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#addFields">Link Fields</button>
+                        </div>
                     </div>
                     <div id="general_messages" style="display: none;"></div>
                     <div class="col-12">
@@ -91,6 +95,35 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary btn-sm">Save Fields</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update SubCategory Modal -->
+    <div class="modal fade" id="addSubCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addSubCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="addSubCategoryForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="subcategory_id" name="subcategory_id" value="{{subcategory.id}}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addSubCategoryModalLabel"><i class='bx bx-plus'></i>Update SubCategory</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="subCategoryName">SubCategory Name</label>
+                            <input type="text" class="form-control" id="subCategoryName" name="subcategory_name" value="{{subcategory.subcat_name}}" required>
+                            <input type="hidden" id="categoryId" name="category_id" value="{{subcategory.category.id}}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save SubCategory</button>
                     </div>
                 </form>
             </div>

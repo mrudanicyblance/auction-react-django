@@ -18,7 +18,7 @@ $(document).ready(function() {
         var form_type = categoryId ? 'updated' : 'created';
 
         $.ajax({
-            type: 'POST',
+            type: 'post',
             url: url,
             data: $('#addCategoryForm').serialize(),
             success: function(response) {
@@ -33,7 +33,7 @@ $(document).ready(function() {
                     }, 2000);
                 }
                 else{
-                    $('#general_messages').addClass('alert alert-danger').text('Error in category addition!')
+                    $('#general_messages').addClass('alert alert-danger').text(response.message)
                     setTimeout(() => {
                         $('#general_messages').removeClass('alert alert-danger').text('')
                         $('#general_messages').hide()
@@ -42,7 +42,15 @@ $(document).ready(function() {
                 }
             },
             error: function(response) {
-                alert(categoryId ? 'Error updating category' : 'Error adding category');
+                // alert(categoryId ? 'Error updating category' : 'Error adding category');
+                $('#addCategoryModal').modal('hide');
+                // console.log(response)
+                $('#general_messages').show()
+                $('#general_messages').addClass('alert alert-danger').text(response.message)
+                setTimeout(() => {
+                    $('#general_messages').removeClass('alert alert-danger').text('')
+                    $('#general_messages').hide()
+                }, 2000);
             }
         });
     });
@@ -54,37 +62,35 @@ $(document).ready(function() {
         $('#sub_categoryId').val(categoryId);
     });
 
-    $('#addSubCategoryForm').submit( function(event) {
+    $('#addSubCategoryForm').submit(function(event) {
         event.preventDefault();
+        var subcategoryId = $('#subcategory_id').val();
+        var url = subcategoryId ? 'http://127.0.0.1:8000/subcategories/edit/' : 'http://127.0.0.1:8000/subcategories/add/';
+        var form_type = subcategoryId ? 'updated' : 'created';
+
         $.ajax({
             type: 'POST',
-            url: 'http://127.0.0.1:8000/subcategories/add/',
+            url: url,
             data: $('#addSubCategoryForm').serialize(),
             success: function(response) {
                 $('#addSubCategoryModal').modal('hide');
-                $('#general_messages').show()
-                if (response.status=='success'){
-                    $('#general_messages').addClass('alert alert-success').text('New subcategory added!')
-                    setTimeout(() => {
-                        $('#general_messages').removeClass('alert alert-success').text('')
-                        $('#general_messages').hide()
-                        location.reload()
-                    }, 2000);
+                $('#general_messages').show();
+                if (response.status == 'success') {
+                    $('#general_messages').addClass('alert alert-success').text(`Subcategory ${form_type} successfully!`);
+                } else {
+                    $('#general_messages').addClass('alert alert-danger').text(response.message);
                 }
-                else{
-                    $('#general_messages').addClass('alert alert-danger').text('Error in subcategory addition!')
-                    setTimeout(() => {
-                        $('#general_messages').removeClass('alert alert-danger').text('')
-                        $('#general_messages').hide()
-                        location.reload()
-                    }, 2000);
-                }
+                setTimeout(function() {
+                    $('#general_messages').removeClass('alert alert-success alert-danger').text('').hide();
+                    location.reload();
+                }, 2000);
             },
             error: function(response) {
-                alert('Error adding subcategory');
+                alert('Error in subcategory operation');
             }
         });
     });
+
 });
 
 function update_category(button){

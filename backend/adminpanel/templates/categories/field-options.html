@@ -12,7 +12,7 @@
                         <h6 class="card-title mb-0">Options for Field: {{ field.field_name }}</h6>
                         <span class="float-right">
                             <a class="btn btn-primary waves-effect waves-light mb-3" href="{% url 'fields' %}">Go Back</a>
-                            <button type="button" class="btn btn-primary waves-effect waves-light mb-3" data-toggle="modal" data-target="#addOptionModal">Add Option</button>
+                            <a href="{% url 'add-option' field.id %}" class="btn btn-primary waves-effect waves-light mb-3">Add Option</a>
                         </span>
                     </div>
                     <table class="table">
@@ -33,7 +33,7 @@
                                                 {% csrf_token %}
                                                 <input type="hidden" name="option_id" value="{{ option.id }}">
                                                 <input type="hidden" name="field_id" value="{{ field.id }}">
-                                                <a type="submit" class="text-secondary mx-2"><i class="fa fa-trash"></i></a>
+                                                <button type="submit" class="btn text-secondary mx-2"><i class="fa fa-trash"></i></button>
                                             </form>
                                         </td>
                                     </tr>
@@ -51,7 +51,7 @@
     </div>
 
     <!-- Add Option Modal -->
-    <div class="modal fade" id="addOptionModal" tabindex="-1" role="dialog" aria-labelledby="addOptionModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade" id="addOptionModal" tabindex="-1" role="dialog" aria-labelledby="addOptionModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form id="addOptionForm" method="post" action="{% url 'add-option' field.id %}">
@@ -79,7 +79,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Update Option Modal -->
     <div class="modal fade" id="updateOptionModal" tabindex="-1" role="dialog" aria-labelledby="updateOptionModalLabel" aria-hidden="true">

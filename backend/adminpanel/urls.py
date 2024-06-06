@@ -25,6 +25,7 @@ urlpatterns = [
     path('categories/edit/',views.update_category, name='updatecategory'),
     path('subcategories/add/', views.add_subcategory, name='createsubcategory'),
     path('subcategories/<int:id>/',views.view_subcategory,name="subcategories"),
+    path('subcategories/edit/',views.update_subcategory,name='editsubcategories'),
 
     # Subcategory & Fields link
     path('subcategories/link-create/',views.link_subcat_field,name='link_subfields'),
